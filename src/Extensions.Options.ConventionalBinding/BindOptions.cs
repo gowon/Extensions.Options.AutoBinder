@@ -9,7 +9,7 @@
     ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> through dependency injection.
     /// </summary>
     /// <typeparam name="TOptions">Options type being configured.</typeparam>
-    public class BindOptions<TOptions> : ConfigureOptions<TOptions> where TOptions : class
+    public sealed class BindOptions<TOptions> : ConfigureOptions<TOptions> where TOptions : class
     {
         /// <summary>
         ///     Initializes a new instance of <see cref="T:Extensions.Options.ConventionalBinding.BindOptions`1" /> with the

@@ -14,27 +14,70 @@
     public static class OptionsBindingServiceCollectionExtensions
     {
         /// <summary>
+        ///     Registers strongly typed options from the specified assemblies.
         /// </summary>
-        /// <param name="collection"></param>
-        /// <param name="markerTypes"></param>
-        public static void BindOptionsFromAssembly(this IServiceCollection collection, params Type[] markerTypes)
+        /// <param name="collection">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> instance.</param>
+        /// <param name="markerTypes">Marker types of assemblies to scan.</param>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
+        public static IServiceCollection BindOptionsFromAssembly(this IServiceCollection collection,
+            params Type[] markerTypes)
         {
-            collection.BindOptionsFromAssembly(markerTypes.Select(type => type.Assembly).ToArray());
+            return collection.BindOptionsFromAssembly(Constants.DefaultOptionsSuffix,
+                markerTypes.Select(type => type.Assembly).ToArray());
         }
 
         /// <summary>
+        ///     Registers strongly typed options from the specified assemblies.
         /// </summary>
-        /// <param name="collection"></param>
-        /// <param name="assemblies"></param>
-        public static void BindOptionsFromAssembly(this IServiceCollection collection, params Assembly[] assemblies)
+        /// <param name="collection">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> instance.</param>
+        /// <param name="suffix">
+        ///     The suffix used to find strongly typed options in the assemblies to bind to the configuration
+        ///     instance.
+        /// </param>
+        /// <param name="markerTypes">Marker types of assemblies to scan.</param>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
+        public static IServiceCollection BindOptionsFromAssembly(this IServiceCollection collection,
+            string suffix, params Type[] markerTypes)
         {
+            return collection.BindOptionsFromAssembly(suffix, markerTypes.Select(type => type.Assembly).ToArray());
+        }
+
+        /// <summary>
+        ///     Registers strongly typed options from the specified assemblies.
+        /// </summary>
+        /// <param name="collection">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> instance.</param>
+        /// <param name="assemblies">Assemblies to scan.</param>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
+        public static IServiceCollection BindOptionsFromAssembly(this IServiceCollection collection,
+            params Assembly[] assemblies)
+        {
+            return collection.BindOptionsFromAssembly(Constants.DefaultOptionsSuffix, assemblies);
+        }
+
+        /// <summary>
+        ///     Registers strongly typed options from the specified assemblies.
+        /// </summary>
+        /// <param name="collection">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> instance.</param>
+        /// <param name="suffix">
+        ///     The suffix used to find strongly typed options in the assemblies to bind to the configuration
+        ///     instance.
+        /// </param>
+        /// <param name="assemblies">Assemblies to scan.</param>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</returns>
+        public static IServiceCollection BindOptionsFromAssembly(this IServiceCollection collection, string suffix,
+            params Assembly[] assemblies)
+        {
+            suffix = suffix ?? throw new ArgumentNullException(nameof(suffix));
+
             var types = assemblies.SelectMany(assembly =>
-                assembly.GetTypes().Where(t => !t.IsAbstract && !t.IsInterface && t.Name.EndsWith("Options"))).ToList();
+                assembly.GetTypes().Where(t => !t.IsAbstract && !t.IsInterface && t.Name.EndsWith(suffix))).ToList();
 
             foreach (var type in types)
             {
                 collection.BindOptions(type);
             }
+
+            return collection;
         }
 
         /// <summary>

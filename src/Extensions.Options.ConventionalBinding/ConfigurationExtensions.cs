@@ -28,7 +28,7 @@
             out IConfiguration foundSection)
             where TOptions : class
         {
-            return TryBind(configuration, options, "Options", out foundSection);
+            return TryBind(configuration, options, Constants.DefaultOptionsSuffix, out foundSection);
         }
 
         /// <summary>
