@@ -1,4 +1,4 @@
-﻿namespace Extensions.Options.ConventionalBinding
+﻿namespace Extensions.Options.AutoBinder
 {
     internal static class Constants
     {

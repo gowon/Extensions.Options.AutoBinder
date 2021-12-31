@@ -1,4 +1,4 @@
-﻿namespace Extensions.Options.ConventionalBinding
+﻿namespace Extensions.Options.AutoBinder
 {
     using System.Collections.Generic;
     using Microsoft.Extensions.Configuration;
@@ -6,7 +6,7 @@
     /// <summary>
     ///     Extension methods that allows binding strongly typed objects to configuration values.
     /// </summary>
-    public static class ConfigurationExtensions
+    public static class AutoBindingConfigurationExtensions
     {
         /// <summary>
         ///     Attempts to bind the given object instance to the configuration section specified by the key by matching property
@@ -56,8 +56,6 @@
             where TOptions : class
         {
             foundSection = null;
-
-            // We look for the config sections with and without the Options prefix
             var name = typeof(TOptions).Name;
             var keys = new List<string>
             {
