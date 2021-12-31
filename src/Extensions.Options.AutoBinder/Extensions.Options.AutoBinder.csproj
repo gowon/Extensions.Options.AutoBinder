@@ -16,10 +16,10 @@
 		<Copyright>© Gowon Patterson. All rights reserved.</Copyright>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/gowon/Extensions.Options.ConventionalBinding</RepositoryUrl>
+		<RepositoryUrl>https://github.com/gowon/Extensions.Options.AutoBinder</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>aspnetcore configuration options binder</PackageTags>
-		<PackageProjectUrl>https://github.com/gowon/Extensions.Options.ConventionalBinding</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/gowon/Extensions.Options.AutoBinder</PackageProjectUrl>
 	</PropertyGroup>
 
 	<PropertyGroup Label="SourceLink">

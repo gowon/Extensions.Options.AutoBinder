@@ -8,7 +8,7 @@ Provides additional functionality to related to automatically binding strongly t
 
 |Package|Stable|Preview|
 |-|-|-|
-|Extensions.Options.AutoBinder||[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https%3A%2F%2Ff.feedz.io%2Fgowon%2Fpre-release%2Fshield%2FExtensions.Options.ConventionalBinding%2Flatest)](https://f.feedz.io/gowon/pre-release/packages/Extensions.Options.ConventionalBinding/latest/download)|
+|Extensions.Options.AutoBinder||[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https%3A%2F%2Ff.feedz.io%2Fgowon%2Fpre-release%2Fshield%2FExtensions.Options.AutoBinder%2Flatest)](https://f.feedz.io/gowon/pre-release/packages/Extensions.Options.AutoBinder/latest/download)|
 
 The package can be obtained by either locally cloning this git repository and building it or via NuGet/Feedz:
 
