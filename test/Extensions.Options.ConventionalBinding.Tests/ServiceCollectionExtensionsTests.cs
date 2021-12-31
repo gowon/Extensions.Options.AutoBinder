@@ -63,7 +63,7 @@ namespace Extensions.Options.ConventionalBinding.Tests
         }
 
         [Theory]
-        [SampleOptionsData(1)]
+        [SampleOptionsData(10)]
         public void BindFieldsToObject(string stringVal, int intVal, bool boolVal, string dateVal)
         {
             // Arrange

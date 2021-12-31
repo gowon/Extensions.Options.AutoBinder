@@ -1,5 +1,7 @@
 # Extensions.Options.ConventionalBinding
 
+[![codecov](https://codecov.io/gh/gowon/Extensions.Options.ConventionalBinding/branch/main/graph/badge.svg?token=S3RDWZCKWF)](https://codecov.io/gh/gowon/Extensions.Options.ConventionalBinding)
+
 Provides additional functionality to related to binding Options by convention using dependency injection.
 
 ## Install

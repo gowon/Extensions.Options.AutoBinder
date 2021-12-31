@@ -27,7 +27,7 @@ jobs:
         nuget-version: 'latest'
 
     - name: Build solution
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release /p:ContinuousIntegrationBuild=true
       
     - name: Test solution
       run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --collect "XPlat Code Coverage" --results-directory "./test-results"
