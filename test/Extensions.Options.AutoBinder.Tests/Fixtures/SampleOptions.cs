@@ -1,4 +1,4 @@
-﻿namespace Extensions.Options.ConventionalBinding.Tests.Models
+﻿namespace Extensions.Options.AutoBinder.Tests.Fixtures
 {
     using System;
 

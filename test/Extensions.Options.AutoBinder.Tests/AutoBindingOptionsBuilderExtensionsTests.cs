@@ -1,4 +1,4 @@
-namespace Extensions.Options.ConventionalBinding.Tests
+namespace Extensions.Options.AutoBinder.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -6,16 +6,12 @@ namespace Extensions.Options.ConventionalBinding.Tests
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
-    using Models;
     using Xunit;
     using Xunit.Categories;
 
     [UnitTest]
-    public class ServiceCollectionExtensionsTests
+    public class AutoBindingOptionsBuilderExtensionsTests
     {
-        private const string BindOptionsCollectionParameterName = "collection";
-        private const string BindOptionsTypeParameterName = "type";
-
         [Fact]
         public void TryBind_ReturnFalse()
         {
@@ -24,27 +20,8 @@ namespace Extensions.Options.ConventionalBinding.Tests
             Assert.False(result);
         }
 
-        [Fact]
-        public void BindOptions_ThrowsIfCollectionIsNull()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() =>
-                OptionsBindingServiceCollectionExtensions.BindOptions(null, typeof(SampleOptions)));
-            Assert.StartsWith(BindOptionsCollectionParameterName, ex.ParamName!);
-        }
-
-        [Fact]
-        public void BindOptions_ThrowsIfTypeIsNull()
-        {
-            var services = new ServiceCollection();
-            var exception = Assert.Throws<ArgumentNullException>(() =>
-                services.BindOptions(null));
-
-            Assert.NotNull(exception);
-            Assert.StartsWith(BindOptionsTypeParameterName, exception.ParamName!);
-        }
-
         [Theory]
-        [SampleOptionsData]
+        [SampleOptionsData(10)]
         public void BindFieldsToChangeTrackedObject(string stringVal, int intVal, bool boolVal, string dateVal)
         {
             // Arrange
@@ -92,12 +69,8 @@ namespace Extensions.Options.ConventionalBinding.Tests
                 }).Build();
 
             var services = new ServiceCollection();
-            services.AddScoped<IConfiguration>(_ => configuration);
-            services.AddOptions();
-            services.BindOptions<SampleOptions>();
-            services.BindOptionsFromAssembly(typeof(SampleOptions));
-            services.BindOptionsFromAssembly(typeof(SampleOptions).Assembly);
-            services.BindOptionsFromAssembly("Options", typeof(SampleOptions));
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            services.AddOptions<SampleOptions>().AutoBind();
             return services.BuildServiceProvider();
         }
     }
