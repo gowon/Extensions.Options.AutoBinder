@@ -1,12 +1,26 @@
 # Extensions.Options.ConventionalBinding
 
-## Usage
+Provides additional functionality to related to binding Options by convention using dependency injection.
 
-Add package to project:
+## Install
+
+|Package|Stable|Preview|
+|-|-|-|
+|Extensions.Options.ConventionalBinding||[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https%3A%2F%2Ff.feedz.io%2Fgowon%2Fpre-release%2Fshield%2FExtensions.Options.ConventionalBinding%2Flatest)](https://f.feedz.io/gowon/pre-release/packages/Extensions.Options.ConventionalBinding/latest/download)|
+
+The package can be obtained by either locally cloning this git repository and building it or via NuGet/Feedz:
 
 ```shell
 Install-Package Extensions.Options.ConventionalBinding
 ```
+
+or
+
+```shell
+dotnet add package Extensions.Options.ConventionalBinding
+```
+
+## Usage
 
 Add Options binding to your service collection:
 

@@ -1,0 +1,50 @@
+name: Continuous Build
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Add mask
+      run: |
+        echo "::add-mask::${{ secrets.FEEDZ_API_KEY }}" 
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0    # https://github.com/devlooped/GitInfo/issues/140#issuecomment-757224054
+
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: 'latest'
+
+    - name: Build solution
+      run: dotnet build --configuration Release
+      
+    - name: Test solution
+      run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx" --collect "XPlat Code Coverage" --results-directory "./test-results"
+
+    - name: Generate test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: Test Results
+        path: test-results/*.trx    # Path to test results
+        reporter: dotnet-trx    # Format of test results
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./test-results/*.xml
+
+    - name: Nuget Push
+      run: nuget push ${{ env.GITHUB_WORKSPACE }}/**/*.nupkg -Source https://f.feedz.io/gowon/pre-release/nuget/index.json -ApiKey ${{ secrets.FEEDZ_API_KEY }} -SkipDuplicate

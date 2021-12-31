@@ -5,8 +5,8 @@
     using Microsoft.Extensions.Options;
 
     /// <summary>
-    ///     Implementation of <see cref="T:Microsoft.Extensions.Options.IConfigureOptions`1" /> that passes
-    ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> through dependency injection.
+    ///     Implementation of <see cref="T:Microsoft.Extensions.Options.IConfigureOptions`1" /> that binds strongly typed
+    ///     objects to <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
     /// </summary>
     /// <typeparam name="TOptions">Options type being configured.</typeparam>
     public sealed class BindOptions<TOptions> : ConfigureOptions<TOptions> where TOptions : class

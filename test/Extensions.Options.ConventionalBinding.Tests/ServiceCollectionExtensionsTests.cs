@@ -2,72 +2,103 @@ namespace Extensions.Options.ConventionalBinding.Tests
 {
     using System;
     using System.Collections.Generic;
+    using Fixtures;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
     using Models;
     using Xunit;
+    using Xunit.Categories;
 
-    public class ServiceCollectionExtensionsTests : IClassFixture<ConfigurationFixture>
+    [UnitTest]
+    public class ServiceCollectionExtensionsTests
     {
-        private ConfigurationFixture _fixture;
+        private const string BindOptionsCollectionParameterName = "collection";
+        private const string BindOptionsTypeParameterName = "type";
 
-        public ServiceCollectionExtensionsTests(ConfigurationFixture fixture)
+        [Fact]
+        public void TryBind_ReturnFalse()
         {
-            _fixture = fixture;
-        }
-
-        [Theory]
-        [InlineData(typeof(SampleOptions), true)]
-        public void TryBindScenarios(Type optionsType, bool bindResult)
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() =>
-                OptionsBindingServiceCollectionExtensions.BindOptions(null, typeof(SampleOptions)));
-            Assert.StartsWith("services", ex.ParamName);
+            var configuration = new ConfigurationBuilder().Build();
+            var result = configuration.TryBind(new SampleOptions(), out _);
+            Assert.False(result);
         }
 
         [Fact]
-        public void BindOptions_ThrowsIfServicesIsNull()
+        public void BindOptions_ThrowsIfCollectionIsNull()
         {
             var ex = Assert.Throws<ArgumentNullException>(() =>
                 OptionsBindingServiceCollectionExtensions.BindOptions(null, typeof(SampleOptions)));
-            Assert.StartsWith("services", ex.ParamName);
+            Assert.StartsWith(BindOptionsCollectionParameterName, ex.ParamName!);
         }
 
         [Fact]
         public void BindOptions_ThrowsIfTypeIsNull()
         {
             var services = new ServiceCollection();
-            var ex = Assert.Throws<ArgumentNullException>(() =>
+            var exception = Assert.Throws<ArgumentNullException>(() =>
                 services.BindOptions(null));
-            Assert.StartsWith("type", ex.ParamName);
+
+            Assert.NotNull(exception);
+            Assert.StartsWith(BindOptionsTypeParameterName, exception.ParamName!);
         }
 
-        [Fact]
-        public void BindOptionsToConfiguration()
+        [Theory]
+        [SampleOptionsData]
+        public void BindFieldsToChangeTrackedObject(string stringVal, int intVal, bool boolVal, string dateVal)
+        {
+            // Arrange
+            var provider = CreateServiceProvider(stringVal, intVal, boolVal, dateVal);
+
+            // Act
+            var monitor = provider.GetService<IOptionsMonitor<SampleOptions>>();
+            var options = monitor!.CurrentValue;
+
+            // Assert
+            Assert.NotNull(options);
+            Assert.Equal(stringVal, options.StringVal);
+            Assert.Equal(intVal, options.IntVal);
+            Assert.Equal(boolVal, options.BoolVal);
+            Assert.Equal(DateTime.Parse(dateVal), options.DateVal);
+        }
+
+        [Theory]
+        [SampleOptionsData(1)]
+        public void BindFieldsToObject(string stringVal, int intVal, bool boolVal, string dateVal)
+        {
+            // Arrange
+            var provider = CreateServiceProvider(stringVal, intVal, boolVal, dateVal);
+
+            // Act
+            var options = provider.GetService<SampleOptions>();
+
+            // Assert
+            Assert.NotNull(options);
+            Assert.Equal(stringVal, options.StringVal);
+            Assert.Equal(intVal, options.IntVal);
+            Assert.Equal(boolVal, options.BoolVal);
+            Assert.Equal(DateTime.Parse(dateVal), options.DateVal);
+        }
+
+        private static ServiceProvider CreateServiceProvider(string stringVal, int intVal, bool boolVal, string dateVal)
         {
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
-                    { "Sample:StringVal", "Orange" },
-                    { "Sample:IntVal", "999" },
-                    { "Sample:BoolVal", "true" },
-                    { "Sample:DateVal", "2020-07-11T07:43:29-4:00" }
+                    { "Sample:StringVal", stringVal },
+                    { "Sample:IntVal", intVal.ToString() },
+                    { "Sample:BoolVal", boolVal.ToString() },
+                    { "Sample:DateVal", dateVal }
                 }).Build();
 
             var services = new ServiceCollection();
             services.AddScoped<IConfiguration>(_ => configuration);
             services.AddOptions();
             services.BindOptions<SampleOptions>();
-            var provider = services.BuildServiceProvider();
-
-            SampleOptions options;
-            using (var scope = provider.CreateScope())
-            {
-                options = scope.ServiceProvider.GetRequiredService<SampleOptions>();
-            }
-
-            Assert.NotNull(options);
-            Assert.Equal(999, options.IntVal);
+            services.BindOptionsFromAssembly(typeof(SampleOptions));
+            services.BindOptionsFromAssembly(typeof(SampleOptions).Assembly);
+            services.BindOptionsFromAssembly("Options", typeof(SampleOptions));
+            return services.BuildServiceProvider();
         }
     }
 }
