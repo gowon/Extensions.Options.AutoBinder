@@ -24,28 +24,30 @@ jobs:
         name: check latest commit is less than a day
         if: ${{ github.event_name == 'schedule' }}
         run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) && echo "::set-output name=should_run::false"
+
   build:
     # https://stackoverflow.com/a/67527144/7644876
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false' }}
     runs-on: ubuntu-latest
     steps:
+
     - name: Add mask
       run: |
         echo "::add-mask::${{ secrets.FEEDZ_API_KEY }}"
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
+
     - name: Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
+
     - name: Setup NuGet
       uses: nuget/setup-nuget@v1
       with:
         nuget-version: 'latest'
+
     - name: Build solution
       run: dotnet build --configuration Release
+
     - name: Nuget Push
       run: nuget push ${{ env.GITHUB_WORKSPACE }}/**/*.nupkg -Source https://f.feedz.io/gowon/pre-release/nuget/index.json -ApiKey ${{ secrets.FEEDZ_API_KEY }} -SkipDuplicate
