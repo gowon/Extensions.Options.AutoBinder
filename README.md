@@ -1,14 +1,15 @@
 # Extensions.Options.AutoBinder
 
-[![codecov](https://codecov.io/gh/gowon/Extensions.Options.ConventionalBinding/branch/main/graph/badge.svg?token=S3RDWZCKWF)](https://codecov.io/gh/gowon/Extensions.Options.ConventionalBinding)
+[![Nuget](https://img.shields.io/nuget/dt/Extensions.Options.AutoBinder?color=blue)](https://www.nuget.org/packages/Extensions.Options.AutoBinder)
+[![codecov](https://codecov.io/gh/gowon/Extensions.Options.AutoBinder/branch/main/graph/badge.svg?token=KHH2IJHLBD)](https://codecov.io/gh/gowon/Extensions.Options.AutoBinder)
 
-Provides additional functionality to related to automatically binding strongly typed options to data in configuration providers.
+Provides additional functionality related to automatically binding strongly typed options to data in configuration providers.
 
 ## Install
 
 |Package|Stable|Preview|
 |-|-|-|
-|Extensions.Options.AutoBinder||[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https%3A%2F%2Ff.feedz.io%2Fgowon%2Fpre-release%2Fshield%2FExtensions.Options.AutoBinder%2Flatest)](https://f.feedz.io/gowon/pre-release/packages/Extensions.Options.AutoBinder/latest/download)|
+|Extensions.Options.AutoBinder|[![Nuget (with prereleases)](https://img.shields.io/nuget/v/Extensions.Options.AutoBinder?color=blue)](https://www.nuget.org/packages/Extensions.Options.AutoBinder)|[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https%3A%2F%2Ff.feedz.io%2Fgowon%2Fpre-release%2Fshield%2FExtensions.Options.AutoBinder%2Flatest)](https://f.feedz.io/gowon/pre-release/packages/Extensions.Options.AutoBinder/latest/download)|
 
 The package can be obtained by either locally cloning this git repository and building it or via NuGet/Feedz:
 
@@ -62,7 +63,7 @@ For example, the following JSON segment would be successfully bound to the `Samp
 }
 ```
 
-This gives you access to the following from the depency injection container:
+This gives you access to the following from the dependency injection container:
 
 - `IOptions<TOptions>` - Represents configuration data once when the application starts and any changes in configuration will require the application to be restarted. It is registered in the dependency injection container with a singleton lifetime.
 

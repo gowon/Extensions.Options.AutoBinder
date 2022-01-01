@@ -1,6 +1,10 @@
 name: Continuous Build
 
-on: [push]
+on:
+  push:
+    paths:
+      - src/**
+      - test/**
 
 jobs:
   build:
