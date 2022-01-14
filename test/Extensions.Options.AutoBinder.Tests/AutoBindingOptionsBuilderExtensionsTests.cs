@@ -57,6 +57,24 @@ namespace Extensions.Options.AutoBinder.Tests
             Assert.Equal(DateTime.Parse(dateVal), options.DateVal);
         }
 
+        [Theory]
+        [SampleOptionsData(1)]
+        public void AutoRegistration(string stringVal, int intVal, bool boolVal, string dateVal)
+        {
+            // Arrange
+            var provider = CreateServiceProvider2(stringVal, intVal, boolVal, dateVal);
+
+            // Act
+            var options = provider.GetService<OtherSampleOptions>();
+
+            // Assert
+            Assert.NotNull(options);
+            Assert.Equal(stringVal, options.StringVal);
+            Assert.Equal(intVal, options.IntVal);
+            Assert.Equal(boolVal, options.BoolVal);
+            Assert.Equal(DateTime.Parse(dateVal), options.DateVal);
+        }
+
         private static ServiceProvider CreateServiceProvider(string stringVal, int intVal, bool boolVal, string dateVal)
         {
             var configuration = new ConfigurationBuilder()
@@ -71,6 +89,23 @@ namespace Extensions.Options.AutoBinder.Tests
             var services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddOptions<SampleOptions>().AutoBind();
+            return services.BuildServiceProvider();
+        }
+
+        private static ServiceProvider CreateServiceProvider2(string stringVal, int intVal, bool boolVal, string dateVal)
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    { "OtherSample:StringVal", stringVal },
+                    { "OtherSample:IntVal", intVal.ToString() },
+                    { "OtherSample:BoolVal", boolVal.ToString() },
+                    { "OtherSample:DateVal", dateVal }
+                }).Build();
+
+            var services = new ServiceCollection();
+            services.AddSingleton<IConfiguration>(_ => configuration);
+            services.AutoBindOptions();
             return services.BuildServiceProvider();
         }
     }
