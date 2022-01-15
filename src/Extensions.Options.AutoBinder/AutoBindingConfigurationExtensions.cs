@@ -1,6 +1,7 @@
 ﻿namespace Extensions.Options.AutoBinder
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
@@ -28,7 +29,7 @@
             out IConfiguration foundSection)
             where TOptions : class
         {
-            return TryBind(configuration, options, Constants.DefaultOptionsSuffix, out foundSection);
+            return TryBind(configuration, options, null, out foundSection);
         }
 
         /// <summary>
@@ -38,10 +39,7 @@
         /// <typeparam name="TOptions">The type of options being configured.</typeparam>
         /// <param name="configuration">The configuration instance to bind.</param>
         /// <param name="options">The instance of <typeparamref name="TOptions" /> to bind.</param>
-        /// <param name="suffix">
-        ///     The suffix to be removed from the type name when binding <typeparamref name="TOptions" /> to the
-        ///     configuration instance.
-        /// </param>
+        /// <param name="keys">The list of keys to match when <typeparamref name="TOptions" /> to the configuration instance.</param>
         /// <param name="foundSection">
         ///     When this method returns, contains the matching
         ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> object, or null if a matching section does not
@@ -52,22 +50,28 @@
         ///     false.
         /// </returns>
         public static bool TryBind<TOptions>(this IConfiguration configuration, TOptions options,
-            string suffix, out IConfiguration foundSection)
+            string[] keys, out IConfiguration foundSection)
             where TOptions : class
         {
             foundSection = null;
-            var name = typeof(TOptions).Name;
-            var keys = new List<string>
-            {
-                name
-            };
+            var sectionKeys = keys?.ToList() ?? new List<string>();
 
-            if (name.EndsWith(suffix))
+            if (sectionKeys.Count == 0)
             {
-                keys.Add(name.Remove(name.Length - suffix.Length));
+                var name = typeof(TOptions).Name;
+                sectionKeys.Add(name);
+
+                if (name.EndsWith(Constants.DefaultOptionsSuffix))
+                {
+                    sectionKeys.Add(name.Remove(name.Length - Constants.DefaultOptionsSuffix.Length));
+                }
+                else
+                {
+                    sectionKeys.Add($"{name}{Constants.DefaultOptionsSuffix}");
+                }
             }
 
-            foreach (var key in keys)
+            foreach (var key in sectionKeys)
             {
                 var section = configuration.GetSection(key);
                 if (section.Exists())

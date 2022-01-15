@@ -54,7 +54,7 @@ For example, the following JSON segment would be successfully bound to the `Samp
 
 ```json
 {
-  "Sample": { \\ or "SampleOptions"
+  "Sample": {
     "StringVal": "Orange",
     "IntVal": 999,
     "BoolVal": true,

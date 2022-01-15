@@ -3,6 +3,7 @@
     using System;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
 
     /// <summary>
@@ -12,35 +13,31 @@
     {
         /// <summary>
         ///     Automatically binds an instance of <typeparamref name="TOptions" /> to data in configuration providers and adds it
-        ///     to the DI container if the
-        ///     type hasn't already been registered.
+        ///     to the DI container if the type hasn't already been registered.
         /// </summary>
         /// <typeparam name="TOptions">The type of options being configured.</typeparam>
         /// <param name="builder">The <see cref="T:Microsoft.Extensions.Options.OptionsBuilder`1" /> instance.</param>
-        /// <param name="suffix">
-        ///     The suffix to be removed from the type name when binding <typeparamref name="TOptions" /> to the
-        ///     configuration instance.
-        /// </param>
+        /// <param name="keys">The list of keys to match when binding <typeparamref name="TOptions" /> to the configuration instance.</param>
         /// <returns>The <see cref="T:Microsoft.Extensions.Options.OptionsBuilder`1" />.</returns>
         public static OptionsBuilder<TOptions> AutoBind<TOptions>(this OptionsBuilder<TOptions> builder,
-            string suffix = Constants.DefaultOptionsSuffix)
+            params string[] keys)
             where TOptions : class
         {
             builder = builder ?? throw new ArgumentNullException(nameof(builder));
 
-            builder.Configure<IConfiguration>((option, configuration) => configuration.TryBind(option, suffix, out _));
+            builder.Configure<IConfiguration>((option, configuration) => configuration.TryBind(option, keys, out _));
 
-            builder.Services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(provider =>
+            builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(IOptionsChangeTokenSource<TOptions>), provider =>
             {
                 var configuration = provider.GetRequiredService<IConfiguration>();
                 return new ConfigurationChangeTokenSource<TOptions>(configuration);
-            });
+            }));
 
-            builder.Services.AddSingleton(provider =>
+            builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(TOptions), provider =>
             {
                 var options = provider.GetRequiredService<IOptions<TOptions>>();
                 return options.Value;
-            });
+            }));
 
             return builder;
         }
