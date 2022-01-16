@@ -48,7 +48,8 @@ jobs:
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./test-results/*.xml
+        directory: ./test-results/
+        verbose: true
 
     - name: Nuget Push
       run: nuget push ${{ env.GITHUB_WORKSPACE }}/**/*.nupkg -Source https://f.feedz.io/gowon/pre-release/nuget/index.json -ApiKey ${{ secrets.FEEDZ_API_KEY }} -SkipDuplicate
