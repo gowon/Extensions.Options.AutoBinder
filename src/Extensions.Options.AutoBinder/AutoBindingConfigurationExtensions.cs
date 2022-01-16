@@ -1,7 +1,6 @@
 ﻿namespace Extensions.Options.AutoBinder
 {
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
@@ -16,6 +15,7 @@
         /// <typeparam name="TOptions">The type of options being configured.</typeparam>
         /// <param name="configuration">The configuration instance to bind.</param>
         /// <param name="options">The instance of <typeparamref name="TOptions" /> to bind.</param>
+        /// <param name="key">The key to match when <typeparamref name="TOptions" /> to the configuration instance.</param>
         /// <param name="foundSection">
         ///     When this method returns, contains the matching
         ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> object, or null if a matching section does not
@@ -25,11 +25,20 @@
         ///     true if <paramref name="options">s</paramref> was bound to the configuration instance successfully; otherwise,
         ///     false.
         /// </returns>
-        public static bool TryBind<TOptions>(this IConfiguration configuration, TOptions options,
+        public static bool TryBind<TOptions>(this IConfiguration configuration, TOptions options, string key,
             out IConfiguration foundSection)
             where TOptions : class
         {
-            return TryBind(configuration, options, null, out foundSection);
+            foundSection = null;
+            var section = configuration.GetSection(key);
+            if (section.Exists())
+            {
+                foundSection = section;
+                configuration.Bind(key, options);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -50,34 +59,20 @@
         ///     false.
         /// </returns>
         public static bool TryBind<TOptions>(this IConfiguration configuration, TOptions options,
-            string[] keys, out IConfiguration foundSection)
+            IEnumerable<string> keys, out IConfiguration foundSection)
             where TOptions : class
         {
             foundSection = null;
-            var sectionKeys = keys?.ToList() ?? new List<string>();
-
-            if (sectionKeys.Count == 0)
+            if (keys == null)
             {
-                var name = typeof(TOptions).Name;
-                sectionKeys.Add(name);
-
-                if (name.EndsWith(Constants.DefaultOptionsSuffix))
-                {
-                    sectionKeys.Add(name.Remove(name.Length - Constants.DefaultOptionsSuffix.Length));
-                }
-                else
-                {
-                    sectionKeys.Add($"{name}{Constants.DefaultOptionsSuffix}");
-                }
+                return false;
             }
 
-            foreach (var key in sectionKeys)
+            foreach (var key in keys)
             {
-                var section = configuration.GetSection(key);
-                if (section.Exists())
+                var found = configuration.TryBind(options, key, out foundSection);
+                if (found)
                 {
-                    foundSection = section;
-                    configuration.Bind(key, options);
                     return true;
                 }
             }

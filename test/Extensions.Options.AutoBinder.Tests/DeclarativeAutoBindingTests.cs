@@ -1,9 +1,7 @@
 namespace Extensions.Options.AutoBinder.Tests
 {
     using System;
-    using System.Collections.Generic;
     using Fixtures;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Xunit;
@@ -20,7 +18,9 @@ namespace Extensions.Options.AutoBinder.Tests
             string configurationSectionName)
         {
             // Arrange
-            var provider = CreateServiceProvider(configurationSectionName, stringVal, intVal, boolVal, dateVal);
+            var provider =
+                ServiceProviderFactory.CreateServiceProvider(configurationSectionName, stringVal,
+                    intVal, boolVal, dateVal, collection => { collection.AutoBindOptions(); });
 
             // Act
             var monitor = provider.GetService<IOptionsMonitor<OtherSampleOptions>>();
@@ -44,7 +44,9 @@ namespace Extensions.Options.AutoBinder.Tests
             string configurationSectionName)
         {
             // Arrange
-            var provider = CreateServiceProvider(configurationSectionName, stringVal, intVal, boolVal, dateVal);
+            var provider =
+                ServiceProviderFactory.CreateServiceProvider(configurationSectionName, stringVal,
+                    intVal, boolVal, dateVal, collection => { collection.AutoBindOptions(); });
 
             // Act
             var service = provider.GetService<IOptionsSnapshot<OtherSampleOptions>>();
@@ -68,7 +70,9 @@ namespace Extensions.Options.AutoBinder.Tests
             string configurationSectionName)
         {
             // Arrange
-            var provider = CreateServiceProvider(configurationSectionName, stringVal, intVal, boolVal, dateVal);
+            var provider =
+                ServiceProviderFactory.CreateServiceProvider(configurationSectionName, stringVal,
+                    intVal, boolVal, dateVal, collection => { collection.AutoBindOptions(); });
 
             // Act
             var service = provider.GetService<IOptions<OtherSampleOptions>>();
@@ -92,10 +96,34 @@ namespace Extensions.Options.AutoBinder.Tests
             string configurationSectionName)
         {
             // Arrange
-            var provider = CreateServiceProvider(configurationSectionName, stringVal, intVal, boolVal, dateVal);
+            var provider =
+                ServiceProviderFactory.CreateServiceProvider(configurationSectionName, stringVal,
+                    intVal, boolVal, dateVal, collection => { collection.AutoBindOptions(); });
 
             // Act
             var options = provider.GetService<OtherSampleOptions>();
+
+            // Assert
+            Assert.NotNull(options);
+            Assert.Equal(stringVal, options.StringVal);
+            Assert.Equal(intVal, options.IntVal);
+            Assert.Equal(boolVal, options.BoolVal);
+            Assert.Equal(DateTime.Parse(dateVal), options.DateVal);
+        }
+
+        [Theory]
+        [OptionsData(5, "OtherStuff")]
+        [OptionsData(5, "OtherStuffOptions")]
+        public void CanBindToSingletonObjectAlternative(string stringVal, int intVal, bool boolVal, string dateVal,
+            string configurationSectionName)
+        {
+            // Arrange
+            var provider =
+                ServiceProviderFactory.CreateServiceProvider(configurationSectionName, stringVal,
+                    intVal, boolVal, dateVal, collection => { collection.AutoBindOptions(typeof(SampleOptions), typeof(OtherSampleOptions)); });
+
+            // Act
+            var options = provider.GetService<OtherStuff>();
 
             // Assert
             Assert.NotNull(options);
@@ -113,7 +141,9 @@ namespace Extensions.Options.AutoBinder.Tests
             string configurationSectionName)
         {
             // Arrange
-            var provider = CreateServiceProvider(configurationSectionName, stringVal, intVal, boolVal, dateVal);
+            var provider =
+                ServiceProviderFactory.CreateServiceProvider(configurationSectionName, stringVal,
+                    intVal, boolVal, dateVal, collection => { collection.AutoBindOptions(); });
 
             // Act
             var options = provider.GetService<OtherSampleOptions>();
@@ -124,26 +154,6 @@ namespace Extensions.Options.AutoBinder.Tests
             Assert.NotEqual(intVal, options.IntVal);
             Assert.NotEqual(boolVal, options.BoolVal);
             Assert.NotEqual(DateTime.Parse(dateVal), options.DateVal);
-        }
-
-        private static ServiceProvider CreateServiceProvider(string section, string stringVal, int intVal, bool boolVal,
-            string dateVal)
-        {
-            var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>
-                {
-                    { $"{section}:StringVal", stringVal },
-                    { $"{section}:IntVal", intVal.ToString() },
-                    { $"{section}:BoolVal", boolVal.ToString() },
-                    { $"{section}:DateVal", dateVal }
-                }).Build();
-
-            var services = new ServiceCollection()
-                .AddSingleton<IConfiguration>(_ => configuration)
-                .AutoBindOptions()
-                .AutoBindOptions(typeof(OtherSampleOptions), typeof(OtherStuff));
-
-            return services.BuildServiceProvider();
         }
     }
 }

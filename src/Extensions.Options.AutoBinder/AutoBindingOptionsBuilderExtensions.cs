@@ -1,6 +1,8 @@
 ﻿namespace Extensions.Options.AutoBinder
 {
     using System;
+    using System.Collections.Generic;
+    using System.Reflection;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,7 +19,10 @@
         /// </summary>
         /// <typeparam name="TOptions">The type of options being configured.</typeparam>
         /// <param name="builder">The <see cref="T:Microsoft.Extensions.Options.OptionsBuilder`1" /> instance.</param>
-        /// <param name="keys">The list of keys to match when binding <typeparamref name="TOptions" /> to the configuration instance.</param>
+        /// <param name="keys">
+        ///     The list of keys to match when binding <typeparamref name="TOptions" /> to the configuration
+        ///     instance.
+        /// </param>
         /// <returns>The <see cref="T:Microsoft.Extensions.Options.OptionsBuilder`1" />.</returns>
         public static OptionsBuilder<TOptions> AutoBind<TOptions>(this OptionsBuilder<TOptions> builder,
             params string[] keys)
@@ -25,7 +30,33 @@
         {
             builder = builder ?? throw new ArgumentNullException(nameof(builder));
 
-            builder.Configure<IConfiguration>((option, configuration) => configuration.TryBind(option, keys, out _));
+            var match = new List<string>();
+
+            var attribute = typeof(TOptions).GetCustomAttribute<AutoBindAttribute>();
+            if (keys.Length > 0)
+            {
+                match.AddRange(keys);
+            }
+            else if (attribute != null && attribute.Keys.Length > 0)
+            {
+                match.AddRange(attribute.Keys);
+            }
+            else
+            {
+                var name = typeof(TOptions).Name;
+                match.Add(name);
+
+                if (name.EndsWith(Constants.DefaultOptionsSuffix))
+                {
+                    match.Add(name.Remove(name.Length - Constants.DefaultOptionsSuffix.Length));
+                }
+                else
+                {
+                    match.Add($"{name}{Constants.DefaultOptionsSuffix}");
+                }
+            }
+
+            builder.Configure<IConfiguration>((option, configuration) => configuration.TryBind(option, match, out _));
 
             builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(IOptionsChangeTokenSource<TOptions>), provider =>
             {

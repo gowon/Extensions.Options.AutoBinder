@@ -46,10 +46,10 @@
             Assembly[] additionalAssemblies)
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
+            services.AddOptions();
 
             var assemblies = additionalAssemblies.Prepend(assembly).Distinct();
             var types = assemblies.SelectMany(GetTypesWithAttribute<AutoBindAttribute>);
-            services.AddOptions();
 
             var optionsMethod = typeof(OptionsServiceCollectionExtensions).GetMethods().Single(
                 methodInfo =>
@@ -66,9 +66,8 @@
             {
                 var genericOptionsMethod = optionsMethod.MakeGenericMethod(optionsType);
                 var builder = genericOptionsMethod.Invoke(null, new object[] { services });
-                var attribute = optionsType.GetCustomAttribute<AutoBindAttribute>();
                 var genericBinderMethod = binderMethod!.MakeGenericMethod(optionsType);
-                genericBinderMethod.Invoke(null, new[] { builder, attribute.Keys });
+                genericBinderMethod.Invoke(null, new[] { builder, new string[] { } });
             }
 
             return services;
