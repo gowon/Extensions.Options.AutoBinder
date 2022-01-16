@@ -15,6 +15,7 @@
         /// <typeparam name="TOptions">The type of options being configured.</typeparam>
         /// <param name="configuration">The configuration instance to bind.</param>
         /// <param name="options">The instance of <typeparamref name="TOptions" /> to bind.</param>
+        /// <param name="key">The key to match when <typeparamref name="TOptions" /> to the configuration instance.</param>
         /// <param name="foundSection">
         ///     When this method returns, contains the matching
         ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> object, or null if a matching section does not
@@ -24,11 +25,20 @@
         ///     true if <paramref name="options">s</paramref> was bound to the configuration instance successfully; otherwise,
         ///     false.
         /// </returns>
-        public static bool TryBind<TOptions>(this IConfiguration configuration, TOptions options,
+        public static bool TryBind<TOptions>(this IConfiguration configuration, TOptions options, string key,
             out IConfiguration foundSection)
             where TOptions : class
         {
-            return TryBind(configuration, options, Constants.DefaultOptionsSuffix, out foundSection);
+            foundSection = null;
+            var section = configuration.GetSection(key);
+            if (section.Exists())
+            {
+                foundSection = section;
+                configuration.Bind(key, options);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -38,10 +48,7 @@
         /// <typeparam name="TOptions">The type of options being configured.</typeparam>
         /// <param name="configuration">The configuration instance to bind.</param>
         /// <param name="options">The instance of <typeparamref name="TOptions" /> to bind.</param>
-        /// <param name="suffix">
-        ///     The suffix to be removed from the type name when binding <typeparamref name="TOptions" /> to the
-        ///     configuration instance.
-        /// </param>
+        /// <param name="keys">The list of keys to match when <typeparamref name="TOptions" /> to the configuration instance.</param>
         /// <param name="foundSection">
         ///     When this method returns, contains the matching
         ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> object, or null if a matching section does not
@@ -52,28 +59,20 @@
         ///     false.
         /// </returns>
         public static bool TryBind<TOptions>(this IConfiguration configuration, TOptions options,
-            string suffix, out IConfiguration foundSection)
+            IEnumerable<string> keys, out IConfiguration foundSection)
             where TOptions : class
         {
             foundSection = null;
-            var name = typeof(TOptions).Name;
-            var keys = new List<string>
+            if (keys == null)
             {
-                name
-            };
-
-            if (name.EndsWith(suffix))
-            {
-                keys.Add(name.Remove(name.Length - suffix.Length));
+                return false;
             }
 
             foreach (var key in keys)
             {
-                var section = configuration.GetSection(key);
-                if (section.Exists())
+                var found = configuration.TryBind(options, key, out foundSection);
+                if (found)
                 {
-                    foundSection = section;
-                    configuration.Bind(key, options);
                     return true;
                 }
             }

@@ -7,13 +7,12 @@
     using Bogus;
     using Xunit.Sdk;
 
-    [AttributeUsage(AttributeTargets.Method)]
-    public sealed class SampleOptionsDataAttribute : DataAttribute
+    public sealed class OptionsDataAttribute : DataAttribute
     {
         private readonly int _count;
         private readonly object[] _values;
 
-        public SampleOptionsDataAttribute(int count = 1, params object[] values)
+        public OptionsDataAttribute(int count = 1, params object[] values)
         {
             _count = count;
             _values = values;
@@ -32,7 +31,8 @@
             // https://github.com/bchavez/Bogus/issues/207#issuecomment-464714277
             var data = faker.Generate(_count)
                 .Select(dto =>
-                    new object[] { dto.StringVal, dto.IntVal, dto.BoolVal, dto.DateVal!.Value.ToString("R") });
+                    new object[] { dto.StringVal, dto.IntVal, dto.BoolVal, dto.DateVal!.Value.ToString("R") }
+                        .Concat(_values).ToArray());
 
             return data;
         }
