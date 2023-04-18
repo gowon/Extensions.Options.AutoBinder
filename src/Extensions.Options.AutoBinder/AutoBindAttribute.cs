@@ -1,30 +1,29 @@
-﻿namespace Extensions.Options.AutoBinder
+﻿namespace Extensions.Options.AutoBinder;
+
+using System;
+
+/// <summary>
+///     Specifies the keys to match and bind the class to data in
+///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public sealed class AutoBindAttribute : Attribute
 {
-    using System;
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="T:AutoBindAttribute" /> class with the specified list of keys.
+    /// </summary>
+    /// <param name="keys">
+    ///     The list of keys to match when binding the class to
+    ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
+    /// </param>
+    public AutoBindAttribute(params string[] keys)
+    {
+        Keys = keys;
+    }
 
     /// <summary>
-    ///     Specifies the keys to match and bind the class to data in
+    ///     The list of keys to match when binding the class to
     ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public sealed class AutoBindAttribute : Attribute
-    {
-        /// <summary>
-        ///     The list of keys to match when binding the class to
-        ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
-        /// </summary>
-        public string[] Keys { get; }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="T:AutoBindAttribute" /> class with the specified list of keys.
-        /// </summary>
-        /// <param name="keys">
-        ///     The list of keys to match when binding the class to
-        ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
-        /// </param>
-        public AutoBindAttribute(params string[] keys)
-        {
-            Keys = keys;
-        }
-    }
+    public string[] Keys { get; }
 }

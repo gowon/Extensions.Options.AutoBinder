@@ -47,6 +47,14 @@ public class SampleOptions
     public bool BoolVal { get; set; }
     public DateTime? DateVal { get; set; }
 }
+
+public class MoreSampleOptions
+{
+    public string StringVal { get; set; }
+    public int IntVal { get; set; }
+    public bool BoolVal { get; set; }
+    public DateTime? DateVal { get; set; }
+}
 ```
 
 Strongly typed options are registered as described in the [Options pattern](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). Simply add `.AutoBind()` to the Options builder when registering your options:
@@ -54,9 +62,11 @@ Strongly typed options are registered as described in the [Options pattern](http
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    \\...
+    // By default, will bind to "Sample" or "SampleOptions"
     services.AddOptions<SampleOptions>().AutoBind();
-    \\...
+    
+    // or, you can specify which keys to bind to
+    services.AddOptions<MoreSampleOptions>().AutoBind("SectionB", "NewConfig");
 }
 ```
 
@@ -65,6 +75,12 @@ The library will attempt to match the strongly typed object to a configuration s
 ```json
 {
   "Sample": {
+    "StringVal": "Orange",
+    "IntVal": 999,
+    "BoolVal": true,
+    "DateVal": "2020-07-11T07:43:29-4:00"
+  },
+  "SectionB": {
     "StringVal": "Orange",
     "IntVal": 999,
     "BoolVal": true,
@@ -102,9 +118,11 @@ You can scan one or more assemblies for types that have been decorated with the 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    \\...
+    // By default, will scan the calling assembly for options to bind
     services.AutoBindOptions();
-    \\...
+    
+    // or, you can specify one or more assemblies to scan
+    services.AutoBindOptions(typeof(SampleOptions), typeof(OtherSampleOptions));
 }
 ```
 

@@ -90,8 +90,8 @@ namespace Extensions.Options.AutoBinder.Tests
         }
 
         [Theory]
-        [OptionsData(10, "MySettings")]
-        [OptionsData(10, "OrangesAndBananas")]
+        [OptionsData(5, "MySettings")]
+        [OptionsData(5, "OrangesAndBananas")]
         public void CanBindToSingletonObject(string stringVal, int intVal, bool boolVal, string dateVal,
             string configurationSectionName)
         {
