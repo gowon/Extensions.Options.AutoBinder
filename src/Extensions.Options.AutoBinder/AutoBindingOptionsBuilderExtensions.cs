@@ -1,7 +1,5 @@
 ﻿namespace Extensions.Options.AutoBinder;
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

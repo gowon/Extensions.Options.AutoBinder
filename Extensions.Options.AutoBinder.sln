@@ -1,18 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31829.152
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A000A2E4-D684-484F-8651-AE7F3577FF3A}"
 	ProjectSection(SolutionItems) = preProject
+		commands.json = commands.json
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{94CE1867-A54B-4FD2-AFB6-3F55151C6B5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Options.AutoBinder", "src\Extensions.Options.AutoBinder\Extensions.Options.AutoBinder.csproj", "{8D337AF2-9CD2-463F-84D5-9B89184AB073}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Options.AutoBinder", "src\Extensions.Options.AutoBinder\Extensions.Options.AutoBinder.csproj", "{8D337AF2-9CD2-463F-84D5-9B89184AB073}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.Options.AutoBinder.Tests", "test\Extensions.Options.AutoBinder.Tests\Extensions.Options.AutoBinder.Tests.csproj", "{DED8B6AF-CFBA-477C-97AF-6C2C2925B561}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions.Options.AutoBinder.Tests", "test\Extensions.Options.AutoBinder.Tests\Extensions.Options.AutoBinder.Tests.csproj", "{DED8B6AF-CFBA-477C-97AF-6C2C2925B561}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

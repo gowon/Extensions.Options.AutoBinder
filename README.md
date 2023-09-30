@@ -1,23 +1,15 @@
 # Extensions.Options.AutoBinder
 
-[![Nuget](https://img.shields.io/nuget/dt/Extensions.Options.AutoBinder?color=blue)](https://www.nuget.org/packages/Extensions.Options.AutoBinder)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/v/Extensions.Options.AutoBinder)](https://www.nuget.org/packages/Extensions.Options.AutoBinder)
+[![Nuget download count badge](https://img.shields.io/nuget/dt/Extensions.Options.AutoBinder)](https://www.nuget.org/packages/Extensions.Options.AutoBinder)
 [![codecov](https://codecov.io/gh/gowon/Extensions.Options.AutoBinder/branch/main/graph/badge.svg?token=KHH2IJHLBD)](https://codecov.io/gh/gowon/Extensions.Options.AutoBinder)
+[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https%3A%2F%2Ff.feedz.io%2Fgowon%2Fpre-release%2Fshield%2FExtensions.Options.AutoBinder%2Flatest)](https://f.feedz.io/gowon/pre-release/packages/Extensions.Options.AutoBinder/latest/download)
 
 Provides additional functionality related to automatically binding strongly typed options to data in configuration providers.
 
 ## Install
 
-|Package|Stable|Preview|
-|-|-|-|
-|Extensions.Options.AutoBinder|[![Nuget (with prereleases)](https://img.shields.io/nuget/v/Extensions.Options.AutoBinder?color=blue)](https://www.nuget.org/packages/Extensions.Options.AutoBinder)|[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https%3A%2F%2Ff.feedz.io%2Fgowon%2Fpre-release%2Fshield%2FExtensions.Options.AutoBinder%2Flatest)](https://f.feedz.io/gowon/pre-release/packages/Extensions.Options.AutoBinder/latest/download)|
-
-The package can be obtained by either locally cloning this git repository and building it or via NuGet/Feedz:
-
-```shell
-Install-Package Extensions.Options.AutoBinder
-```
-
-or
+Add a reference to the [`Extensions.Options.AutoBinder`](https://www.nuget.org/packages/Extensions.Options.AutoBinder) package:
 
 ```shell
 dotnet add package Extensions.Options.AutoBinder
@@ -144,7 +136,3 @@ The library will attempt to match all strongly typed objects  a configuration se
   }
 }
 ```
-
-## License
-
-MIT

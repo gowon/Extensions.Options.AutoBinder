@@ -2,10 +2,16 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "jetbrains.resharper.globaltools": {
-      "version": "2021.1.2",
+    "dotnet-reportgenerator-globaltool": {
+      "version": "5.1.25",
       "commands": [
-        "jb"
+        "reportgenerator"
+      ]
+    },
+    "gitversion.tool": {
+      "version": "5.12.0",
+      "commands": [
+        "dotnet-gitversion"
       ]
     }
   }

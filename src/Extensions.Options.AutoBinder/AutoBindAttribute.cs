@@ -1,7 +1,5 @@
 ﻿namespace Extensions.Options.AutoBinder;
 
-using System;
-
 /// <summary>
 ///     Specifies the keys to match and bind the class to data in
 ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.

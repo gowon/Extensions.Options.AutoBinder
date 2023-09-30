@@ -1,6 +1,5 @@
 ﻿namespace Extensions.Options.AutoBinder;
 
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
 /// <summary>
