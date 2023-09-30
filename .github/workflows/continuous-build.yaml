@@ -15,7 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Run test coverage
     steps:
+      # https://gitversion.net/docs/reference/requirements
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - uses: actions/setup-dotnet@v3
         with:
