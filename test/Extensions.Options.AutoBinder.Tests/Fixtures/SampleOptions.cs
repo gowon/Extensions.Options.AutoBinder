@@ -1,22 +1,19 @@
-﻿namespace Extensions.Options.AutoBinder.Tests.Fixtures
+﻿namespace Extensions.Options.AutoBinder.Tests.Fixtures;
+
+public class SampleOptions
 {
-    using System;
+    public string StringVal { get; set; }
+    public int? IntVal { get; set; }
+    public bool? BoolVal { get; set; }
+    public DateTime? DateVal { get; set; }
+}
 
-    public class SampleOptions
-    {
-        public string StringVal { get; set; }
-        public int? IntVal { get; set; }
-        public bool? BoolVal { get; set; }
-        public DateTime? DateVal { get; set; }
-    }
+[AutoBind("MySettings", "OrangesAndBananas")]
+public class OtherSampleOptions : SampleOptions
+{
+}
 
-    [AutoBind("MySettings", "OrangesAndBananas")]
-    public class OtherSampleOptions : SampleOptions
-    {
-    }
-
-    [AutoBind]
-    public class OtherStuff : SampleOptions
-    {
-    }
+[AutoBind]
+public class OtherStuff : SampleOptions
+{
 }
