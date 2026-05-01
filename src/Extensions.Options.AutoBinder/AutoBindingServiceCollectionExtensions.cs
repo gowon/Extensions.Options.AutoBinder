@@ -46,7 +46,10 @@ public static class AutoBindingServiceCollectionExtensions
         services.AddOptions();
 
         var assemblies = additionalAssemblies.Prepend(assembly).Distinct();
-        var types = assemblies.SelectMany(GetTypesWithAttribute<AutoBindAttribute>);
+        var bindings = assemblies.SelectMany(a => a.GetTypes())
+            .ToDictionary(type => type,
+                type => type.GetCustomAttribute(typeof(AutoBindAttribute), false) as AutoBindAttribute)
+            .Where(pair => pair.Value != null).Select(x => (x.Key, x.Value));
 
         var optionsMethod = typeof(OptionsServiceCollectionExtensions).GetMethods().Single(
             methodInfo =>
@@ -55,23 +58,21 @@ public static class AutoBindingServiceCollectionExtensions
                 methodInfo.GetParameters().Length == 1 &&
                 methodInfo.GetParameters()[0].ParameterType == typeof(IServiceCollection));
 
-        var binderMethod = typeof(AutoBindingOptionsBuilderExtensions).GetMethod(
-            nameof(AutoBindingOptionsBuilderExtensions.AutoBind),
-            BindingFlags.Static | BindingFlags.Public);
+        var binderMethod = typeof(AutoBindingOptionsBuilderExtensions).GetMethods().Single(
+            methodInfo =>
+                methodInfo.Name == nameof(AutoBindingOptionsBuilderExtensions.AutoBind) &&
+                methodInfo.GetGenericArguments().Length == 1 &&
+                methodInfo.GetParameters().Length == 3 &&
+                methodInfo.GetParameters()[1].ParameterType == typeof(ServiceLifetime));
 
-        foreach (var optionsType in types)
+        foreach (var (optionsType, attribute) in bindings)
         {
             var genericOptionsMethod = optionsMethod.MakeGenericMethod(optionsType);
             var builder = genericOptionsMethod.Invoke(null, new object[] { services });
             var genericBinderMethod = binderMethod!.MakeGenericMethod(optionsType);
-            genericBinderMethod.Invoke(null, new[] { builder, new string[] { } });
+            genericBinderMethod.Invoke(null, new[] { builder, attribute!.ServiceLifetime, attribute!.Keys });
         }
 
         return services;
-    }
-
-    private static IEnumerable<Type> GetTypesWithAttribute<TAttribute>(Assembly assembly)
-    {
-        return assembly.GetTypes().Where(type => type.GetCustomAttributes(typeof(TAttribute), true).Length > 0);
     }
 }

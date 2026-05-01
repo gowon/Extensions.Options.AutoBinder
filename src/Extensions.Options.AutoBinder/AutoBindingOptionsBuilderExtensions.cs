@@ -24,7 +24,28 @@ public static class AutoBindingOptionsBuilderExtensions
     /// <returns>The <see cref="T:Microsoft.Extensions.Options.OptionsBuilder`1" />.</returns>
     public static OptionsBuilder<TOptions> AutoBind<TOptions>(this OptionsBuilder<TOptions> builder,
         params string[] keys)
-        where TOptions : class
+        where TOptions : class, new()
+    {
+        builder.AutoBind(ServiceLifetime.Singleton, keys);
+        return builder;
+    }
+
+    /// <summary>
+    ///     Automatically binds an instance of <typeparamref name="TOptions" /> to data in configuration providers and adds it
+    ///     to the DI container if the type hasn't already been registered.
+    /// </summary>
+    /// <typeparam name="TOptions">The type of options being configured.</typeparam>
+    /// <param name="builder">The <see cref="T:Microsoft.Extensions.Options.OptionsBuilder`1" /> instance.</param>
+    /// <param name="serviceLifetime"></param>
+    /// <param name="keys">
+    ///     The list of keys to match when binding <typeparamref name="TOptions" /> to the configuration
+    ///     instance.
+    /// </param>
+    /// <returns>The <see cref="T:Microsoft.Extensions.Options.OptionsBuilder`1" />.</returns>
+    public static OptionsBuilder<TOptions> AutoBind<TOptions>(this OptionsBuilder<TOptions> builder,
+        ServiceLifetime serviceLifetime,
+        params string[] keys)
+        where TOptions : class, new()
     {
         builder = builder ?? throw new ArgumentNullException(nameof(builder));
         var match = new List<string>();
@@ -34,7 +55,7 @@ public static class AutoBindingOptionsBuilderExtensions
         {
             match.AddRange(keys);
         }
-        else if (attribute != null && attribute.Keys.Length > 0)
+        else if (attribute is { Keys.Length: > 0 })
         {
             match.AddRange(attribute.Keys);
         }
@@ -51,11 +72,34 @@ public static class AutoBindingOptionsBuilderExtensions
             return new ConfigurationChangeTokenSource<TOptions>(configuration);
         }));
 
-        builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(TOptions), provider =>
+
+        switch (serviceLifetime)
         {
-            var options = provider.GetRequiredService<IOptions<TOptions>>();
-            return options.Value;
-        }));
+            case ServiceLifetime.Scoped:
+                builder.Services.TryAdd(ServiceDescriptor.Scoped(typeof(TOptions), provider =>
+                {
+                    var options = provider.GetRequiredService<IOptionsSnapshot<TOptions>>();
+                    return options.Value;
+                }));
+                break;
+            case ServiceLifetime.Singleton:
+                builder.Services.TryAdd(ServiceDescriptor.Singleton(typeof(TOptions), provider =>
+                {
+                    var options = provider.GetRequiredService<IOptions<TOptions>>();
+                    return options.Value;
+                }));
+                break;
+            case ServiceLifetime.Transient:
+
+                builder.Services.TryAdd(ServiceDescriptor.Transient(typeof(TOptions), provider =>
+                {
+                    var options = provider.GetRequiredService<IOptionsSnapshot<TOptions>>();
+                    return options.Value;
+                }));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(serviceLifetime), serviceLifetime, null);
+        }
 
         return builder;
     }

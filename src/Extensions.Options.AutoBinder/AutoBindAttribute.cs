@@ -1,5 +1,7 @@
 ﻿namespace Extensions.Options.AutoBinder;
 
+using Microsoft.Extensions.DependencyInjection;
+
 /// <summary>
 ///     Specifies the keys to match and bind the class to data in
 ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
@@ -7,6 +9,11 @@
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class AutoBindAttribute : Attribute
 {
+    public AutoBindAttribute(ServiceLifetime serviceLifetime, params string[] keys) : this(keys)
+    {
+        ServiceLifetime = serviceLifetime;
+    }
+
     /// <summary>
     ///     Initializes a new instance of the <see cref="T:AutoBindAttribute" /> class with the specified list of keys.
     /// </summary>
@@ -24,4 +31,6 @@ public sealed class AutoBindAttribute : Attribute
     ///     <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" />.
     /// </summary>
     public string[] Keys { get; }
+
+    public ServiceLifetime ServiceLifetime { get; } = ServiceLifetime.Singleton;
 }
